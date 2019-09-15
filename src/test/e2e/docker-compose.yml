@@ -1,0 +1,77 @@
+version: '3'
+services:
+  e2e-test:
+    build: ./e2e-docker
+    environment:
+      OAUTH2_LOGIN: kathra-user-0
+      OAUTH2_PASSWORD: azerty
+      OAUTH2_URL: http://keycloak:8080/auth/realms/kathra/protocol/openid-connect/token
+      OAUTH2_HOST: keycloak
+      OAUTH2_PORT: 8080
+      OAUTH2_PATH: /auth/realms/kathra/protocol/openid-connect/token
+      OAUTH2_CLIENT_ID: kathra-resourcemanager
+      OAUTH2_CLIENT_SECRET: 6f0d9f87-2965-46b2-ac68-779b5938d1c4
+      RESOURCEMANAGER_HOST: resourcemanager
+      RESOURCEMANAGER_PORT: 8080
+      RESOURCEMANAGER_CONTEXT_PATH: 'api/v1'
+    volumes:
+    - ./e2e-docker/src:/external-src/
+    depends_on:
+    - resourcemanager
+    - keycloak
+
+  resourcemanager :
+    image: kathra-resourcemanager-arangodb:latest
+    environment:
+      JAVA_OPTIONS: "-Xms64m -Xmx128m"
+      JAVA_OPTS: "-Xms64m -Xmx128m"
+      ARANGODB_DATA: kathra
+      ARANGODB_USER: root
+      ARANGODB_PASSWORD: root
+      ARANGODB_SERVICE_HOST: arangodb
+      ARANGODB_SERVICE_PORT: 8529
+      KEYCLOAK_AUTH_URL: http://keycloak:8080/auth
+      KEYCLOAK_CLIENT_ID: kathra-resourcemanager
+      KEYCLOAK_CLIENT_SECRET: 6f0d9f87-2965-46b2-ac68-779b5938d1c4
+      KEYCLOAK_KATHRA_AUTH_URL: http://keycloak:8080/auth/realms/kathra/protocol/openid-connect/auth
+    ports:
+    - 80:8080
+    depends_on:
+    - arangodb
+    - keycloak
+
+  arangodb:
+    image: arangodb:3.3.21
+    ports:
+      - 8529:8529
+    volumes:
+      - ./arango_export:/arango_export
+    environment:
+      - ARANGO_ROOT_PASSWORD=root
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+    - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    #- ./pg_export:/pg_export
+    ports:
+    - 5432:5432
+  keycloak:
+    image: jboss/keycloak:4.2.1.Final
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Pa55w0rd
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    ports:
+    - 9000:8080
+    depends_on:
+    - postgres

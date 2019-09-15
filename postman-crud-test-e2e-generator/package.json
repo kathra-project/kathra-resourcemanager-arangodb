@@ -1,0 +1,27 @@
+{
+  "name": "postman-crud-test-e2e-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "node index.js"
+  },
+  "author": "Julien Boubechtoula",
+  "license": "ISC",
+  "dependencies": {
+    "arangojs": "^6.10.0",
+    "fs-extra": "^7.0.1",
+    "js-yaml": "^3.12.0",
+    "newman": "^4.3.1",
+    "path": "^0.12.7",
+    "prettify-json": "^0.3.0",
+    "prettyjson": "^1.2.1",
+    "rimraf": "^2.6.2",
+    "swagger2-postman-generator": "^2.1.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}

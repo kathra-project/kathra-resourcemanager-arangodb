@@ -1,0 +1,87 @@
+[
+  {
+    "path": "/implementations$",
+    "method": "GET",
+    "pathVariables": {},
+    "result": [
+      {
+        "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8",
+        "name": "first-implementation",
+        "status": "PENDING",
+        "createdBy": "kathra-user-0",
+        "metadata": {
+          "groupId": "kathra-projects/kathra-group-0"
+        },
+        "description": "This is the first implementation",
+        "title": "First implementation",
+        "versions": []
+      }
+    ]
+  },{
+  "path": "/implementations/:resourceId$",
+  "method": "GET",
+  "pathVariables": {
+    "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+  },
+  "result": {
+    "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8",
+    "name": "first-implementation",
+    "status": "PENDING",
+    "createdBy": "kathra-user-0",
+    "description": "This is the first implementation",
+    "title": "First implementation",
+    "versions": [],
+    "implementations": [],
+    "apiRepository": {}
+  }
+},{
+  "path": "/implementations",
+  "method": "POST",
+  "rawModeData": {
+    "name": "first-implementation",
+    "title": "First implementation",
+    "description": "This is the first implementation"
+  }
+},
+  {
+    "path": "/implementations/:resourceId$",
+    "method": "PATCH",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "rawModeData": {
+      "title": "First implementation patched"
+    },
+    "result": {
+      "name": "first-implementation",
+      "title": "First implementation patched",
+      "description": "This is the first implementation",
+      "createdBy": "kathra-user-0"
+    }
+  },
+  {
+    "path": "/implementations/:resourceId$",
+    "method": "PUT",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "rawModeData": {
+      "name": "first-implementation updated",
+      "title": "First implementation updated",
+      "description": null
+    },
+    "result": {
+      "name": "first-implementation",
+      "title": "First implementation patched",
+      "description": null
+    }
+  },
+  {
+    "path": "/implementations/:resourceId$",
+    "method": "DELETE",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "result": {}
+  }
+]

@@ -1,0 +1,13 @@
+spring:
+  data:
+    arangodb:
+      database: ${ARANGODB_DATA:kathra}
+      user: ${ARANGODB_USER:root}
+      password: ${ARANGODB_PASSWORD:undefined}
+      host: ${ARANGODB_SERVICE_HOST:localhost}
+      port: ${ARANGODB_SERVICE_PORT:8529}
+
+server.servlet.context-path: /api/v1
+server.port: ${HTTP_PORT:8080}
+
+#camelcomponent.servlet.mapping.context-path: /*

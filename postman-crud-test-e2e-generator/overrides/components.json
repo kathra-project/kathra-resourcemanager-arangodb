@@ -1,0 +1,95 @@
+[
+  {
+    "path": "/components$",
+    "method": "GET",
+    "pathVariables": {},
+    "result": [
+      {
+        "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8",
+        "name": "first-component",
+        "status": "PENDING",
+        "createdBy": "kathra-user-0",
+        "metadata": {
+          "groupId": "kathra-projects/kathra-group-0"
+        },
+        "description": "This is the first component",
+        "title": "First component",
+        "versions": [],
+        "implementations": [],
+        "apiRepository": {}
+      }
+    ]
+  },{
+  "path": "/components/:resourceId$",
+  "method": "GET",
+  "pathVariables": {
+    "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+  },
+  "result": {
+      "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8",
+      "name": "first-component",
+      "status": "PENDING",
+      "createdBy": "kathra-user-0",
+      "metadata": {
+        "groupId": "kathra-projects/kathra-group-0"
+      },
+      "description": "This is the first component",
+      "title": "First component",
+      "versions": [],
+      "implementations": [],
+      "apiRepository": {}
+    }
+  },{
+    "path": "/components\\?groupPath.*",
+    "method": "POST",
+    "pathVariables": {
+      "groupPath": "kathra-projects/kathra-group-0"
+    },
+    "rawModeData": {
+      "name": "first-component",
+      "title": "First component",
+      "description": "This is the first component"
+    }
+  },
+  {
+    "path": "/components/:resourceId$",
+    "method": "PATCH",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "rawModeData": {
+      "title": "First component patched"
+    },
+    "result": {
+      "name": "first-component",
+      "title": "First component patched",
+      "description": "This is the first component",
+      "createdBy": "kathra-user-0"
+    }
+  },
+  {
+    "path": "/components/:resourceId$",
+    "method": "PUT",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "rawModeData": {
+      "name": "first-component updated",
+      "title": "First component updated",
+      "description": null
+    },
+    "result": {
+      "name": "first-component",
+      "title": "First component patched",
+      "description": null
+    }
+  },
+  {
+    "path": "/components/:resourceId$",
+    "method": "DELETE",
+    "pathVariables": {
+      "resourceId": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+    },
+    "result": {}
+  }
+]

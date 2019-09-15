@@ -1,0 +1,70 @@
+[
+  {
+    "path": "/{{resourcePath}}$",
+    "method": "GET",
+    "pathVariables": {},
+    "result": [
+      {
+        "id": "{{resourceIdExisting}}",
+        "status": "PENDING",
+        "createdBy": "kathra-user-0",
+        "name": "{{resourceName}}"
+      }
+    ]
+  },{
+  "path": "/{{resourcePath}}/:resourceId$",
+  "method": "GET",
+  "pathVariables": {
+    "resourceId": "{{resourceIdExisting}}"
+  },
+  "result": {
+    "id": "{{resourceIdExisting}}",
+    "status": "PENDING",
+    "createdBy": "kathra-user-0",
+    "name": "{{resourceName}}"
+  }
+  },{
+    "path": "/{{resourcePath}}",
+    "method": "POST",
+    "rawModeData": {
+      "name": "{{resourceName}}"
+    }
+  },
+  {
+    "path": "/{{resourcePath}}/:resourceId$",
+    "method": "PATCH",
+    "pathVariables": {
+      "resourceId": "{{resourceIdExisting}}"
+    },
+    "rawModeData": {
+      "status": "READY"
+    },
+    "result": {
+      "name": "{{resourceName}}",
+      "status": "READY"
+    }
+  },
+  {
+    "path": "/{{resourcePath}}/:resourceId$",
+    "method": "PUT",
+    "pathVariables": {
+      "resourceId": "{{resourceIdExisting}}"
+    },
+    "rawModeData": {
+      "name": "{{resourceName}}-updated",
+      "status": "READY"
+    },
+    "result": {
+      "name": "{{resourceName}}-updated",
+      "status": "READY"
+    }
+  },
+  {
+    "path": "/{{resourcePath}}/:resourceId$",
+    "method": "DELETE",
+    "pathVariables": {
+      "resourceId": "{{resourceIdExisting}}"
+    },
+    "result": {}
+  }
+]

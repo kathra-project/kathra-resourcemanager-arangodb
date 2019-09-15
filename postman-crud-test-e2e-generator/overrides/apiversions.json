@@ -1,0 +1,92 @@
+[
+  {
+    "path": "/apiversions$",
+    "method": "GET",
+    "pathVariables": {},
+    "result": [
+      {
+        "id": "af576254-5ded-4008-8554-5e7c0b11536e",
+        "name": "first-apiversion",
+        "status": "PENDING",
+        "createdBy": "kathra-user-0",
+        "version": "1.0.0",
+        "component": {
+          "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+        }
+      }
+    ]
+  },{
+  "path": "/apiversions/:resourceId$",
+  "method": "GET",
+  "pathVariables": {
+    "resourceId": "af576254-5ded-4008-8554-5e7c0b11536e"
+  },
+  "result": {
+      "id": "af576254-5ded-4008-8554-5e7c0b11536e",
+      "name": "first-apiversion",
+      "status": "PENDING",
+      "createdBy": "kathra-user-0",
+      "metadata": {
+        "groupId": "kathra-projects/kathra-group-0"
+      },
+      "version": "1.0.0"
+    }
+  },{
+    "path": "/apiversions",
+    "method": "POST",
+    "pathVariables": {},
+    "rawModeData": {
+      "name": "second-apiversion",
+      "version": "2.0.0",
+      "component": {
+        "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+      }
+    },
+    "result": {
+      "name": "second-apiversion",
+      "status": "PENDING",
+      "version": "2.0.0",
+      "createdBy": "kathra-user-0",
+      "component": {
+        "id": "009b8829-cdb9-43d9-a4e4-aa0c00a1f9a8"
+      }
+    }
+  },
+  {
+    "path": "/apiversions/:resourceId$",
+    "method": "PATCH",
+    "pathVariables": {
+      "resourceId": "af576254-5ded-4008-8554-5e7c0b11536e"
+    },
+    "rawModeData": {
+      "version": "1.0.1"
+    },
+    "result": {
+      "name": "first-apiversion",
+      "version": "1.0.1"
+    }
+  },
+  {
+    "path": "/apiversions/:resourceId$",
+    "method": "PUT",
+    "pathVariables": {
+      "resourceId": "af576254-5ded-4008-8554-5e7c0b11536e"
+    },
+    "rawModeData": {
+      "name": "first-apiversion-2",
+      "version": "1.0.1"
+    },
+    "result": {
+      "name": "first-apiversion-2",
+      "version": null
+    }
+  },
+  {
+    "path": "/apiversions/:resourceId$",
+    "method": "DELETE",
+    "pathVariables": {
+      "resourceId": "af576254-5ded-4008-8554-5e7c0b11536e"
+    },
+    "result": {}
+  }
+]
