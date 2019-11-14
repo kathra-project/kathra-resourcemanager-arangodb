@@ -82,6 +82,7 @@ class EdgeUtilsTest {
     public class ExampleChildDb extends AbstractResourceDb<ExampleChild> {
         public ExampleChildDb(String id){
             super(id);
+            setStatus(Resource.StatusEnum.READY);
         }
 
     }
@@ -113,6 +114,26 @@ class EdgeUtilsTest {
         childParentRecursiveLnk.updateReference(parent, "recursive", repository);
 
         verifySave(repository, parent, child, 1);
+        verifyDelete(repository, parent, child, 0);
+    }
+
+    @Test
+    public void given_parent_with_no_child_then_add_child_with_status_deleted_and_updateReference_then_no_call_save() throws Exception {
+
+        EdgeUtils<ChildParentRecursiveLnk> childParentRecursiveLnk = EdgeUtils.of(ChildParentRecursiveLnk.class);
+        RepositoryChildParentRecursiveLnk repository = getRepositoryChildParentRecursiveLnk();
+
+        ExampleParentDb parent = getExampleParentDb("parent-1");
+        ExampleParentDb child = getExampleParentDb("child-0");
+        child.setStatus(Resource.StatusEnum.DELETED);
+
+        mockExistingChild(parent, ImmutableList.of(), repository);
+
+        parent.setRecursive(child);
+
+        childParentRecursiveLnk.updateReference(parent, "recursive", repository);
+
+        verifySave(repository, parent, child, 0);
         verifyDelete(repository, parent, child, 0);
     }
 
@@ -154,6 +175,52 @@ class EdgeUtilsTest {
 
         verifySave(repository, parent, childs.get(0), 0);
         verifySave(repository, parent, childs.get(1), 1);
+
+        verifyDelete(repository, parent, childs.get(0), 0);
+        verifyDelete(repository, parent, childs.get(1), 0);
+    }
+
+    @Test
+    public void given_parent_with_existing_child_then_child_is_deleted_and_update_then_call_delete_once() throws Exception {
+
+        edgeUtils = EdgeUtils.of(ChildParentLnk.class);
+        RepositoryChildParentLnk repository = getRepositoryChildParentLnk();
+
+        ExampleParentDb parent = getExampleParentDb("parent-1");
+        List<ExampleChildDb> childsExisting = ImmutableList.of(getExampleChildDb("child-0"));
+        List<ExampleChildDb> childs = ImmutableList.of(getExampleChildDb("child-0"), getExampleChildDb("child-1"));
+        mockExistingChild(parent, childsExisting, repository);
+
+        childs.get(0).setStatus(Resource.StatusEnum.DELETED);
+
+        edgeUtils.updateList(parent, childs, repository);
+
+
+        verifySave(repository, parent, childs.get(0), 0);
+        verifySave(repository, parent, childs.get(1), 1);
+
+        verifyDelete(repository, parent, childs.get(0), 1);
+        verifyDelete(repository, parent, childs.get(1), 0);
+    }
+
+    @Test
+    public void given_parent_with_existing_child_then_new_child_is_deleted_and_update_then_no_change() throws Exception {
+
+        edgeUtils = EdgeUtils.of(ChildParentLnk.class);
+        RepositoryChildParentLnk repository = getRepositoryChildParentLnk();
+
+        ExampleParentDb parent = getExampleParentDb("parent-1");
+        List<ExampleChildDb> childsExisting = ImmutableList.of(getExampleChildDb("child-0"));
+        List<ExampleChildDb> childs = ImmutableList.of(getExampleChildDb("child-0"), getExampleChildDb("child-1"));
+        mockExistingChild(parent, childsExisting, repository);
+
+        childs.get(1).setStatus(Resource.StatusEnum.DELETED);
+
+        edgeUtils.updateList(parent, childs, repository);
+
+
+        verifySave(repository, parent, childs.get(0), 0);
+        verifySave(repository, parent, childs.get(1), 0);
 
         verifyDelete(repository, parent, childs.get(0), 0);
         verifyDelete(repository, parent, childs.get(1), 0);

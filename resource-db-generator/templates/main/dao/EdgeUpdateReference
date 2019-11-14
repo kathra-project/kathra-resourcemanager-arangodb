@@ -1,1 +1,1 @@
-        EdgeUtils.of({{edgeClazz}}.class).updateReference(this.convertResourceToResourceDb(object), "{{property}}", {{edgeRepository}});
+        EdgeUtils.of({{edgeClazz}}.class).updateReference(resourceDb, "{{property}}", {{edgeRepository}});

@@ -29,7 +29,7 @@ import fr.xebia.extras.selma.Mapper;
         withCyclicMapping = true,
         withCustomFields = {
                 @Field( value = "createdAt", withCustom = ResourceDbMapper.CustomCreatedAt.class),
-                @Field( value = "updatedAt", withCustom = ResourceDbMapper.CustomCreatedAt.class),
+                @Field( value = "updatedAt", withCustom = ResourceDbMapper.CustomUpdatedAt.class),
                 @Field( value = "metadata", withCustom = ResourceDbMapper.CustomMetadata.class)
         })
 public interface KeyPairMapper extends ResourceDbMapper {

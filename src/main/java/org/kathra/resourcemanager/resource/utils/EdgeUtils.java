@@ -20,18 +20,13 @@
  */
 package org.kathra.resourcemanager.resource.utils;
 
-import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.Edge;
 import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.annotation.To;
 import com.google.common.collect.ImmutableList;
 import org.kathra.core.model.Resource;
-import org.kathra.resourcemanager.apiversion.dao.ApiVersionDb;
-import org.kathra.resourcemanager.component.dao.ComponentApiVersionEdge;
-import org.kathra.resourcemanager.component.dao.ComponentDb;
 import org.kathra.resourcemanager.resource.dao.AbstractResourceDb;
 import org.kathra.resourcemanager.resource.dao.IResourceDb;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -45,7 +40,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * EdgeUtils
@@ -91,7 +85,7 @@ public class EdgeUtils<X> {
     }
 
     public static <U> EdgeUtils<U> of(Class<U> edgeClass){
-        return new EdgeUtils(edgeClass);
+        return new EdgeUtils<>(edgeClass);
     }
 
 
@@ -113,10 +107,9 @@ public class EdgeUtils<X> {
             }
 
 
+            boolean linkIsBroken = Resource.StatusEnum.DELETED.equals(resourceDb.getStatus()) || (linkedObject != null && Resource.StatusEnum.DELETED.equals(linkedObject.getStatus()));
 
-            Class<? extends Resource> resourceClass = getResourceClassFromResourceDb(resourceDb);
-
-            if (linkedObject != null && linkedObject.getId() != null) {
+            if (linkedObject != null && linkedObject.getId() != null && !linkIsBroken) {
                 Method methodFindAllByResourceDb = repository.getClass().getMethod("findAllBy" + StringUtils.capitalize(attributeParent.getName()), String.class);
                 List<X> links = (List<X>) methodFindAllByResourceDb.invoke(repository, resourceDb.toArangoIdentifier());
                 boolean linkExist = false;
@@ -152,23 +145,6 @@ public class EdgeUtils<X> {
         return (Class<? extends Resource>) ((ParameterizedType) resourceDb.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    private Class<? extends Resource> getResourceClassFromResourceDb2(IResourceDb resourceDb) throws IllegalStateException {
-        Class<? extends Resource> resourceClass = null;
-        Class<?> clazz = resourceDb.getClass();
-        do {
-            if (clazz.getSuperclass().equals(AbstractResourceDb.class)) {
-                resourceClass = (Class<? extends Resource>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
-            } else {
-                clazz = clazz.getSuperclass();
-            }
-        } while(resourceClass == null || clazz.equals(Object.class));
-
-        if (resourceClass == null) {
-            throw new IllegalStateException("Unable to find Resource defined class for class " + resourceDb.getClass().getName());
-        }
-        return resourceClass;
-    }
-
     /**
      * Update link of resource with list
      *
@@ -199,6 +175,12 @@ public class EdgeUtils<X> {
         actionsToDo.put(Action.UPDATE, ImmutableList.of());
         actionsToDo.put(Action.ADD, getEdgesToAdd(resourceDb, resourcesItemsNew, attributeParent, attributeChild, existingEdges));
 
+        if (Resource.StatusEnum.DELETED.equals(resourceDb.getStatus())) {
+            actionsToDo.get(Action.DELETE).addAll(actionsToDo.get(Action.ADD));
+            actionsToDo.put(Action.ADD, ImmutableList.of());
+            actionsToDo.get(Action.DELETE).addAll(actionsToDo.get(Action.UPDATE));
+            actionsToDo.put(Action.UPDATE, ImmutableList.of());
+        }
         return actionsToDo;
     }
 
@@ -220,7 +202,7 @@ public class EdgeUtils<X> {
 
     private List<X> getEdgesToAdd(AbstractResourceDb resourceDb, List<? extends AbstractResourceDb> resourcesItemsNew, Field attributeParent, Field attributeChild, List existingEdges) {
         return resourcesItemsNew.stream()
-                    .filter(defined -> existingEdges.stream().noneMatch(existingChild -> {
+                    .filter(defined -> !Resource.StatusEnum.DELETED.equals(defined.getStatus()) && existingEdges.stream().noneMatch(existingChild -> {
                         try {
                             return ((AbstractResourceDb) attributeChild.get(existingChild)).getId().equals(defined.getId());
                         } catch (Exception e) {
@@ -234,14 +216,16 @@ public class EdgeUtils<X> {
 
     private List<X> getEdgesToDelete(List<? extends AbstractResourceDb> resourcesItemsNew, Field attributeChild, List existingEdges) {
         return (List<X>) existingEdges.stream()
-                        .filter(existing -> resourcesItemsNew.stream().noneMatch(defined -> {
-                            try {
-                                return defined.getId().equals(((AbstractResourceDb) attributeChild.get(existing)).getId());
-                            } catch (Exception e) {
-                                logger.error("Unable to get instance from property "+attributeChild.getName()+" into class "+existing.getClass().toString(), e);
-                                throw new RuntimeException(e);
-                            }
-                        })).collect(Collectors.toList());
+                        .filter(existing -> {
+                                return resourcesItemsNew.stream().filter(i -> !Resource.StatusEnum.DELETED.equals(i.getStatus())).noneMatch(defined -> {
+                                    try {
+                                        return defined.getId().equals(((AbstractResourceDb) attributeChild.get(existing)).getId());
+                                    } catch (Exception e) {
+                                        logger.error("Unable to get instance from property "+attributeChild.getName()+" into class "+existing.getClass().toString(), e);
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                        }).collect(Collectors.toList());
     }
 
 
