@@ -76,9 +76,12 @@ public class LeanResourceDbUtils<X extends IResourceDb> {
      */
     private IResourceDb leanResourceDb(IResourceDb object, int level) {
         try {
+            //if (object.getStatus().equals(Resource.StatusEnum.DELETED))
+            //    return null;
 
             if (level == 0)
                 return getSimpleResourceDb(object);
+
             int currentLevel = level - 1;
             PropertyDescriptor[] propertiesDescriptors = propertyDescriptors.get(object.getClass());
             if (propertiesDescriptors == null) {
@@ -102,19 +105,31 @@ public class LeanResourceDbUtils<X extends IResourceDb> {
                     while (listIterator.hasNext()) {
                         Object item = listIterator.next();
                         if (item instanceof IResourceDb) {
-                            listIterator.set(leanResourceDb((IResourceDb) item, currentLevel));
+                            Object leanedO = leanResourceDb((IResourceDb) item, currentLevel);
+                            if (leanedO != null) {
+                                listIterator.set(leanResourceDb((IResourceDb) item, currentLevel));
+                            } else {
+                                listIterator.remove();
+                            }
                         }
                     }
                 } else if (Map.class.isAssignableFrom(propertyObject.getClass())) {
                     for(Object entry : ((Map) propertyObject).entrySet()){
                         if (entry instanceof Map.Entry){
                             if(((Map.Entry)entry).getValue() instanceof IResourceDb){
-                                ((Map.Entry)entry).setValue(leanResourceDb((IResourceDb) ((Map.Entry)entry).getValue(), currentLevel));
+                                Object leanedO = leanResourceDb((IResourceDb) ((Map.Entry)entry).getValue(), currentLevel);
+                                if (leanedO != null) {
+                                    ((Map.Entry) entry).setValue(leanedO);
+                                } else {
+                                    ((Map) propertyObject).remove(((Map.Entry) entry).getKey());
+                                }
                             }
                             if(((Map.Entry)entry).getKey() instanceof IResourceDb){
                                 IResourceDb newKey = leanResourceDb((IResourceDb) ((Map.Entry) entry).getKey(), currentLevel);
                                 ((Map) propertyObject).remove(((Map.Entry)entry).getKey());
-                                ((Map) propertyObject).put(newKey, ((Map.Entry)entry).getValue());
+                                if (newKey != null) {
+                                    ((Map) propertyObject).put(newKey, ((Map.Entry) entry).getValue());
+                                }
                             }
                         }
                     }

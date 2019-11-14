@@ -74,7 +74,13 @@ public abstract class Abstract{{clazz}}Dao extends AbstractResourceDao<{{clazz}}
         super.update(object, author);
         updateReferences(object);
     }
+    @Override
+    public void delete({{clazz}} object, String author) throws Exception {
+        super.delete(object, author);
+        updateReferences(object);
+    }
     private void updateReferences({{clazz}} object) throws Exception {
+        {{clazz}}Db resourceDb = this.convertResourceToResourceDb(object);
 {{updateOverride}}
     }
 

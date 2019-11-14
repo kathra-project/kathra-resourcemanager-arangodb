@@ -8,7 +8,7 @@
  -  outputDir : Directory for class generated
  -  outputTestDir : Directory for test class generated
  -  templateDir : Directory for templates
- -  trategies : no documented, it's experimental, sorry
+ -  strategies : no documented, it's experimental, sorry
 
 #### Example : How to generate resource crud for class Group
 
