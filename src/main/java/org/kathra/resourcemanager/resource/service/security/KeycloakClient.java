@@ -34,7 +34,12 @@ public class KeycloakClient {
 
     @PostConstruct
     public void init(){
-        KeycloakUtils.init();
+        try {
+            KeycloakUtils.init();
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
 
     public List<String> getResourcesByType(Session session, String type, String scopeIdentifier) throws Exception {
