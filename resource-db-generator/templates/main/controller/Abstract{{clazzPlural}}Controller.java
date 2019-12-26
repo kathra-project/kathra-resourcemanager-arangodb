@@ -49,8 +49,9 @@ public abstract class Abstract{{clazzPlural}}Controller implements AbstractCrudC
         return add(object);
     }
 
-    public void delete{{clazz}}(String resourceId) throws Exception {
+    public String delete{{clazz}}(String resourceId) throws Exception {
         delete(resourceId);
+        return resourceId;
     }
 
     public {{clazz}} get{{clazz}}(String resourceId) throws Exception {
