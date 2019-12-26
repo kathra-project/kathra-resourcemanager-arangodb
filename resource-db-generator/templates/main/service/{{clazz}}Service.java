@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
  * @author {{author}}
  */
 @Service
-public class {{clazz}}Service extends Abstract{{clazz}}Service {
+public class {{clazz}}Service extends AbstractService<{{clazz}},String> {
 
     public {{clazz}}Service(@Autowired {{clazz}}Dao dao, @Autowired SessionService sessionService) {
         super(dao, sessionService);

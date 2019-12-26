@@ -13,7 +13,7 @@
 #### Example : How to generate resource crud for class Group
 
 ```
-$ node index.js clazzName=Group
+$ node index.js clazzName=Group,ApiVersion,Assignation,BinaryRepository,CatalogEntry,CatalogEntryPackage,Component,Implementation,ImplementationVersion,KeyPair,Library,LibraryApiVersion,Pipeline,SourceRepository,User
 
 config :  { coreModelDirectory:
    '../../../../../kathra-core/kathra-core-java/kathra-core-model/src/main/java/org/kathra/core/model/',
