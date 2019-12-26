@@ -23,6 +23,7 @@ package org.kathra.resourcemanager.catalogentry.dao;
 
 import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.Relations;
+import org.kathra.core.model.Asset;
 import org.kathra.core.model.CatalogEntry;
 import org.kathra.core.model.CatalogEntry.*;
 import org.kathra.resourcemanager.resource.dao.AbstractResourceDb;
@@ -42,8 +43,7 @@ import org.kathra.resourcemanager.catalogentrypackage.dao.CatalogEntryPackageCat
 @Document("CatalogEntries")
 public class CatalogEntryDb extends AbstractResourceDb<CatalogEntry> {
 
-		private String description; 
-		private Object asset; 
+		private String description;
 		private PackageTemplateEnum packageTemplate; 
 		@Relations(edges = CatalogEntryPackageCatalogEntryEdge.class, lazy = true) 
 		private List<CatalogEntryPackageDb> packages; 
@@ -57,9 +57,6 @@ public class CatalogEntryDb extends AbstractResourceDb<CatalogEntry> {
 
 		public String getDescription() { return this.description;}
 		public void setDescription(String description) { this.description=description;}
-
-		public Object getAsset() { return this.asset;}
-		public void setAsset(Object asset) { this.asset=asset;}
 
 		public PackageTemplateEnum getPackageTemplate() { return this.packageTemplate;}
 		public void setPackageTemplate(PackageTemplateEnum packageTemplate) { this.packageTemplate=packageTemplate;}

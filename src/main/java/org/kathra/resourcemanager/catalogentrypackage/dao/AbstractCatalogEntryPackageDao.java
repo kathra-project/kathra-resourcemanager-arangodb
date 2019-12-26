@@ -67,9 +67,6 @@ public abstract class AbstractCatalogEntryPackageDao extends AbstractResourceDao
 	SourceRepositoryCatalogEntryPackageEdgeRepository sourceRepositoryCatalogEntryPackageEdgeRepository;
 	@Autowired
 	PipelineCatalogEntryPackageEdgeRepository pipelineCatalogEntryPackageEdgeRepository;
-	@Autowired
-	CatalogEntryPackageCatalogEntryEdgeRepository catalogEntryPackageCatalogEntryEdgeRepository;
-
 
     public AbstractCatalogEntryPackageDao(@Autowired CatalogEntryPackageRepository repository, @Autowired ArangoOperations operations){
         super(repository, operations);

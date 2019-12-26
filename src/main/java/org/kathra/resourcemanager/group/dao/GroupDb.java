@@ -25,6 +25,7 @@ import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.Relations;
 import org.kathra.core.model.Group;
 import org.kathra.core.model.Group.*;
+import org.kathra.core.model.User;
 import org.kathra.resourcemanager.resource.dao.AbstractResourceDb;
 import java.util.List;
 
@@ -46,7 +47,7 @@ import org.kathra.resourcemanager.group.dao.GroupGroupEdge;
 public class GroupDb extends AbstractResourceDb<Group> {
 
 		private String path; 
-		private Object technicalUser; 
+		private User technicalUser;
 		@Relations(edges = GroupBinaryRepositoryEdge.class, lazy = true) 
 		private List<BinaryRepositoryDb> binaryRepositories; 
 		@Relations(edges = GroupAssignationEdge.class, lazy = true) 
@@ -68,8 +69,8 @@ public class GroupDb extends AbstractResourceDb<Group> {
 		public String getPath() { return this.path;}
 		public void setPath(String path) { this.path=path;}
 
-		public Object getTechnicalUser() { return this.technicalUser;}
-		public void setTechnicalUser(Object technicalUser) { this.technicalUser=technicalUser;}
+		public User getTechnicalUser() { return this.technicalUser;}
+		public void setTechnicalUser(User technicalUser) { this.technicalUser=technicalUser;}
 
 		public List<BinaryRepositoryDb> getBinaryRepositories() { return this.binaryRepositories;}
 		public void setBinaryRepositories(List<BinaryRepositoryDb> binaryRepositories) { this.binaryRepositories=binaryRepositories;}
