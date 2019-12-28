@@ -21,7 +21,7 @@
 package org.kathra.resourcemanager.configuration;
 
 import com.google.common.collect.ImmutableList;
-import org.kathra.resourcemanager.ResourcemanagerApi;
+import org.kathra.resourcemanager.ResourceManagerApi;
 import org.apache.camel.model.MarshalDefinition;
 import org.apache.camel.model.UnmarshalDefinition;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class CamelRouteForSpring extends ResourcemanagerApi {
+public class CamelRouteForSpring extends ResourceManagerApi {
 
     @Override
     public void configure() throws Exception {

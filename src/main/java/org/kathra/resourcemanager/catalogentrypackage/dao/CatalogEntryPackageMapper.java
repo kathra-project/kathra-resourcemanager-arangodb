@@ -27,6 +27,9 @@ import fr.xebia.extras.selma.Mapper;
 
 @Mapper(
         withCyclicMapping = true,
+        withIgnoreFields = {
+                "versions"
+        },
         withCustomFields = {
                 @Field( value = "createdAt", withCustom = ResourceDbMapper.CustomCreatedAt.class),
                 @Field( value = "updatedAt", withCustom = ResourceDbMapper.CustomUpdatedAt.class),
