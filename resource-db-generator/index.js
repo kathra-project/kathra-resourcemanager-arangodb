@@ -71,7 +71,7 @@ function generateArangoDbStack(clazzName, config, modelClass, options) {
     }
 
     var propertiesModel = getPropertiesModel(javaModel, config.strategies.mergeParentProperties);
-    definePropertiesModelConvertedToDbResource(clazzName, propertiesModel);
+    propertiesModel = definePropertiesModelConvertedToDbResource(clazzName, propertiesModel);
 
     var directories = ["dao", "controller", "service"];
     directories.forEach(function(directory) {
@@ -144,10 +144,17 @@ function generateArangoDbStack(clazzName, config, modelClass, options) {
                 var toImport = "";
                 var fields = "";
                 var beforeEach = "";
+                var fieldsInserted = []
                 propertiesModel.filter(property => property.edge).forEach(function(property) {
+                    if (fieldsInserted.indexOf(jsLcfirst(property.edge.clazzNameRepository)) > -1) {
+                        return;
+                    }
+                    fieldsInserted.push(jsLcfirst(property.edge.clazzNameRepository));
                     //toImport += getImport(config.packageRoot + '.' + typeProperty.toLowerCase() + '.dao.' + typeDbProperty)+"\n";
                     toImport += getImport(property.edge.package + '.' + property.edge.clazzName)+"\n";
                     toImport += getImport(property.edge.package + '.' + property.edge.clazzNameRepository)+"\n";
+
+
 
                     fields += '\t@Mock\n';
                     fields += '\t' + property.edge.clazzNameRepository + ' ' + jsLcfirst(property.edge.clazzNameRepository) + ';\n';
@@ -224,12 +231,11 @@ function getTemplateDao(config, javaModel, clazzName, templateData) {
     var updateOverride = "";
     var toImport = "";
     var properties = getPropertiesModel(javaModel, true);
-    definePropertiesModelConvertedToDbResource(clazzName, properties);
+    properties = definePropertiesModelConvertedToDbResource(clazzName, properties);
 
     var fieldsInserted = [];
 
     properties.filter(property => property.edge).forEach(function(property) {
-        console.log(property.edge);
         var templateEdgeUpdate = property.isList ? templateUpdateEdgeListData : templateUpdateEdgeReferenceData;
         var typeProperty = property.isList ? property.parameterizedType.type : property.type;
         var typeDbProperty = property.isList ? property.parameterizedType.typeDb : property.typeDb;
@@ -316,18 +322,20 @@ function generateImportsProperty(clazzName, property, alreadyImport) {
     }
 }
 
+function checkClassIsKathraModel(clazzName) {
+    try {
+        javaParser.parse(fs.readFileSync(config.coreModelDirectory+'/'+clazzName+'.java', 'utf8'));
+        return true;
+    } catch(err) {}
+    return false;
+}
+
 function checkClassIsResource(clazzName) {
     try {
         var javaModel = javaParser.parse(fs.readFileSync(config.coreModelDirectory+'/'+clazzName+'.java', 'utf8'));
         var superClass = getParentClassFromModel(javaModel);
-        if (superClass == 'Resource') {
-            return true;
-        } else {
-            return checkClassIsResource(superClass);
-        }
-    } catch(err) {
-
-    }
+        return (superClass == 'Resource') || checkClassIsResource(superClass);
+    } catch(err) {}
     return false;
 }
 
@@ -436,6 +444,7 @@ function getPropertiesModel(javaModel, mergeParentProperties) {
             var propertyType = null;
             if (item.type.node == 'SimpleType') {
                 property.type = item.type.name.identifier;
+                property.isInternEnum = classIsEnum(javaModel, item.type.name.identifier)
             } else if (item.type.node == 'ParameterizedType') {
                 property.type = item.type.type.name.identifier+"<"+item.type.typeArguments[0].name.identifier+">";
                 property.isList = (item.type.type.name.identifier == 'List');
@@ -444,7 +453,7 @@ function getPropertiesModel(javaModel, mergeParentProperties) {
             properties.push(property);
         }
     }
-
+    return properties;
     var parentClazzName = getParentClassFromModel(javaModel);
     if (mergeParentProperties == true && parentClazzName != 'Resource') {
         var parentModel = javaParser.parse(fs.readFileSync(config.coreModelDirectory+'/'+parentClazzName+'.java', 'utf8'));
@@ -454,15 +463,27 @@ function getPropertiesModel(javaModel, mergeParentProperties) {
     return properties;
 }
 
+function classIsEnum(javaModel, clazzName) {
+     for(i in javaModel.types[0].bodyDeclarations) {
+        var item = javaModel.types[0].bodyDeclarations[i];
+        if (item.node == 'EnumDeclaration' && item.name.identifier == clazzName) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function getParentClassFromModel(javaModel) {
     return javaModel.types[0].superclassType.name.identifier;
 }
 
 function definePropertiesModelConvertedToDbResource(clazzName, properties) {
-    properties.forEach(function (property){
+    properties = properties.map(function (property){
         if (property.parameterizedType != null) {
             if (checkClassIsResource(property.parameterizedType.type)) {
                 property.parameterizedType.typeDb = property.parameterizedType.type + 'Db';
+            } else if (checkClassIsKathraModel(property.parameterizedType.type)) {
+                return null;
             }
             if (property.isList && property.parameterizedType.typeDb) {
                 property.typeDb = 'List<' + property.parameterizedType.typeDb + '>';
@@ -473,8 +494,12 @@ function definePropertiesModelConvertedToDbResource(clazzName, properties) {
         } else if (checkClassIsResource(property.type)) {
             property.typeDb = property.type + 'Db';
             property.edge = getEdge(clazzName, property.type);
+        } else if (checkClassIsKathraModel(property.type)) {
+            return null;
         }
-    });
+        return property;
+    }).filter(item => item != null);
+    return properties
 }
 
 function getEdge(clazzA, clazzB) {

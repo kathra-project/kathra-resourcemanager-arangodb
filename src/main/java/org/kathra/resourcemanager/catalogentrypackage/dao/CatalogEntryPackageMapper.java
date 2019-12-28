@@ -24,12 +24,11 @@ import org.kathra.core.model.CatalogEntryPackage;
 import org.kathra.resourcemanager.resource.dao.ResourceDbMapper;
 import fr.xebia.extras.selma.Field;
 import fr.xebia.extras.selma.Mapper;
+import fr.xebia.extras.selma.IgnoreMissing;
 
 @Mapper(
         withCyclicMapping = true,
-        withIgnoreFields = {
-                "versions"
-        },
+        withIgnoreMissing = IgnoreMissing.ALL,
         withCustomFields = {
                 @Field( value = "createdAt", withCustom = ResourceDbMapper.CustomCreatedAt.class),
                 @Field( value = "updatedAt", withCustom = ResourceDbMapper.CustomUpdatedAt.class),
