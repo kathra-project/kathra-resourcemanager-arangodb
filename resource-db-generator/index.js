@@ -225,13 +225,21 @@ function getTemplateDao(config, javaModel, clazzName, templateData) {
     var toImport = "";
     var properties = getPropertiesModel(javaModel, true);
     definePropertiesModelConvertedToDbResource(clazzName, properties);
+
+    var fieldsInserted = [];
+
     properties.filter(property => property.edge).forEach(function(property) {
+        console.log(property.edge);
         var templateEdgeUpdate = property.isList ? templateUpdateEdgeListData : templateUpdateEdgeReferenceData;
         var typeProperty = property.isList ? property.parameterizedType.type : property.type;
         var typeDbProperty = property.isList ? property.parameterizedType.typeDb : property.typeDb;
+        var fieldName = jsLcfirst(property.edge.clazzNameRepository);
+        if (fieldsInserted.indexOf(fieldName) == -1) {
+            fields += "\t@Autowired\n\t" + property.edge.clazzNameRepository + " " + fieldName+";\n";
+            fieldsInserted.push(fieldName);
+        }
 
-        fields += "\t@Autowired\n\t" + property.edge.clazzNameRepository + " " + jsLcfirst(property.edge.clazzNameRepository)+";\n";
-        initCollectionIfNotExistOverride += "\t\tthis."+jsLcfirst(property.edge.clazzNameRepository)+".count();\n";
+        initCollectionIfNotExistOverride += "\t\tthis."+fieldName+".count();\n";
         createEdgeClass(property.edge, config.outputDir);
 
         templateEdgeUpdate = replacingClazz(templateEdgeUpdate, clazzName);
@@ -239,7 +247,7 @@ function getTemplateDao(config, javaModel, clazzName, templateData) {
         templateEdgeUpdate = replacing(templateEdgeUpdate, 'property', property.name);
         templateEdgeUpdate = replacing(templateEdgeUpdate, 'clazzProperty', typeDbProperty);
         templateEdgeUpdate = replacing(templateEdgeUpdate, 'clazzDb', clazzName+"Db");
-        templateEdgeUpdate = replacing(templateEdgeUpdate, 'edgeRepository', jsLcfirst(property.edge.clazzNameRepository));
+        templateEdgeUpdate = replacing(templateEdgeUpdate, 'edgeRepository', fieldName);
         templateEdgeUpdate = replacing(templateEdgeUpdate, 'edgeClazz', property.edge.clazzName);
 
         updateOverride += templateEdgeUpdate+'\n';
