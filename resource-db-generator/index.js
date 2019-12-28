@@ -232,7 +232,6 @@ function getTemplateDao(config, javaModel, clazzName, templateData) {
     var toImport = "";
     var properties = getPropertiesModel(javaModel, true);
     properties = definePropertiesModelConvertedToDbResource(clazzName, properties);
-
     var fieldsInserted = [];
 
     properties.filter(property => property.edge).forEach(function(property) {
@@ -453,7 +452,6 @@ function getPropertiesModel(javaModel, mergeParentProperties) {
             properties.push(property);
         }
     }
-    return properties;
     var parentClazzName = getParentClassFromModel(javaModel);
     if (mergeParentProperties == true && parentClazzName != 'Resource') {
         var parentModel = javaParser.parse(fs.readFileSync(config.coreModelDirectory+'/'+parentClazzName+'.java', 'utf8'));
