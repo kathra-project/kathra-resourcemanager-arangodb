@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -102,11 +103,11 @@ public abstract class AbstractApiVersionDao extends AbstractResourceDao<ApiVersi
         ApiVersionDb resourceDb = this.convertResourceToResourceDb(object);
         EdgeUtils.of(ComponentApiVersionEdge.class).updateReference(resourceDb, "component", componentApiVersionEdgeRepository);
         if (object.getLibrariesApiVersions() != null) {
-            List librariesApiVersionsItemsToUpdate = object.getLibrariesApiVersions().stream().map(i -> new LibraryApiVersionDb(i.getId())).collect(Collectors.toList());
+            List librariesApiVersionsItemsToUpdate = object.getLibrariesApiVersions().parallelStream().filter(Objects::nonNull).map(i -> new LibraryApiVersionDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(LibraryApiVersionApiVersionEdge.class).updateList(resourceDb, librariesApiVersionsItemsToUpdate, libraryApiVersionApiVersionEdgeRepository);
         }
         if (object.getImplementationsVersions() != null) {
-            List implementationsVersionsItemsToUpdate = object.getImplementationsVersions().stream().map(i -> new ImplementationVersionDb(i.getId())).collect(Collectors.toList());
+            List implementationsVersionsItemsToUpdate = object.getImplementationsVersions().parallelStream().filter(Objects::nonNull).map(i -> new ImplementationVersionDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(ImplementationVersionApiVersionEdge.class).updateList(resourceDb, implementationsVersionsItemsToUpdate, implementationVersionApiVersionEdgeRepository);
         }
 

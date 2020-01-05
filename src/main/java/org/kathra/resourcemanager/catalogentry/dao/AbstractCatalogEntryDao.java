@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -89,7 +90,7 @@ public abstract class AbstractCatalogEntryDao extends AbstractResourceDao<Catalo
     private void updateReferences(CatalogEntry object) throws Exception {
         CatalogEntryDb resourceDb = this.convertResourceToResourceDb(object);
         if (object.getPackages() != null) {
-            List packagesItemsToUpdate = object.getPackages().stream().map(i -> new CatalogEntryPackageDb(i.getId())).collect(Collectors.toList());
+            List packagesItemsToUpdate = object.getPackages().parallelStream().filter(Objects::nonNull).map(i -> new CatalogEntryPackageDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(CatalogEntryPackageCatalogEntryEdge.class).updateList(resourceDb, packagesItemsToUpdate, catalogEntryPackageCatalogEntryEdgeRepository);
         }
 

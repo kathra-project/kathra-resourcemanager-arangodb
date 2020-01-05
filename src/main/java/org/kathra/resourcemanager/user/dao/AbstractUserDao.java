@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -89,7 +90,7 @@ public abstract class AbstractUserDao extends AbstractResourceDao<User, UserDb, 
     private void updateReferences(User object) throws Exception {
         UserDb resourceDb = this.convertResourceToResourceDb(object);
         if (object.getGroups() != null) {
-            List groupsItemsToUpdate = object.getGroups().stream().map(i -> new AssignationDb(i.getId())).collect(Collectors.toList());
+            List groupsItemsToUpdate = object.getGroups().parallelStream().filter(Objects::nonNull).map(i -> new AssignationDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(UserAssignationEdge.class).updateList(resourceDb, groupsItemsToUpdate, userAssignationEdgeRepository);
         }
 

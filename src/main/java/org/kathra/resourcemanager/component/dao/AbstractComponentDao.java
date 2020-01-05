@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -107,15 +108,15 @@ public abstract class AbstractComponentDao extends AbstractResourceDao<Component
     private void updateReferences(Component object) throws Exception {
         ComponentDb resourceDb = this.convertResourceToResourceDb(object);
         if (object.getVersions() != null) {
-            List versionsItemsToUpdate = object.getVersions().stream().map(i -> new ApiVersionDb(i.getId())).collect(Collectors.toList());
+            List versionsItemsToUpdate = object.getVersions().parallelStream().filter(Objects::nonNull).map(i -> new ApiVersionDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(ComponentApiVersionEdge.class).updateList(resourceDb, versionsItemsToUpdate, componentApiVersionEdgeRepository);
         }
         if (object.getLibraries() != null) {
-            List librariesItemsToUpdate = object.getLibraries().stream().map(i -> new LibraryDb(i.getId())).collect(Collectors.toList());
+            List librariesItemsToUpdate = object.getLibraries().parallelStream().filter(Objects::nonNull).map(i -> new LibraryDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(LibraryComponentEdge.class).updateList(resourceDb, librariesItemsToUpdate, libraryComponentEdgeRepository);
         }
         if (object.getImplementations() != null) {
-            List implementationsItemsToUpdate = object.getImplementations().stream().map(i -> new ImplementationDb(i.getId())).collect(Collectors.toList());
+            List implementationsItemsToUpdate = object.getImplementations().parallelStream().filter(Objects::nonNull).map(i -> new ImplementationDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(ImplementationComponentEdge.class).updateList(resourceDb, implementationsItemsToUpdate, implementationComponentEdgeRepository);
         }
         EdgeUtils.of(SourceRepositoryComponentEdge.class).updateReference(resourceDb, "apiRepository", sourceRepositoryComponentEdgeRepository);

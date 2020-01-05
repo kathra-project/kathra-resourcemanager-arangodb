@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -120,14 +121,14 @@ public abstract class AbstractImplementationDao extends AbstractResourceDao<Impl
         ImplementationDb resourceDb = this.convertResourceToResourceDb(object);
         EdgeUtils.of(ImplementationComponentEdge.class).updateReference(resourceDb, "component", implementationComponentEdgeRepository);
         if (object.getVersions() != null) {
-            List versionsItemsToUpdate = object.getVersions().stream().map(i -> new ImplementationVersionDb(i.getId())).collect(Collectors.toList());
+            List versionsItemsToUpdate = object.getVersions().parallelStream().filter(Objects::nonNull).map(i -> new ImplementationVersionDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(ImplementationVersionImplementationEdge.class).updateList(resourceDb, versionsItemsToUpdate, implementationVersionImplementationEdgeRepository);
         }
         EdgeUtils.of(ImplementationBinaryRepositoryEdge.class).updateReference(resourceDb, "binaryRepository", implementationBinaryRepositoryEdgeRepository);
         EdgeUtils.of(SourceRepositoryImplementationEdge.class).updateReference(resourceDb, "sourceRepository", sourceRepositoryImplementationEdgeRepository);
         EdgeUtils.of(PipelineImplementationEdge.class).updateReference(resourceDb, "pipeline", pipelineImplementationEdgeRepository);
         if (object.getCatalogEntries() != null) {
-            List catalogEntriesItemsToUpdate = object.getCatalogEntries().stream().map(i -> new CatalogEntryDb(i.getId())).collect(Collectors.toList());
+            List catalogEntriesItemsToUpdate = object.getCatalogEntries().parallelStream().filter(Objects::nonNull).map(i -> new CatalogEntryDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(ImplementationCatalogEntryEdge.class).updateList(resourceDb, catalogEntriesItemsToUpdate, implementationCatalogEntryEdgeRepository);
         }
 

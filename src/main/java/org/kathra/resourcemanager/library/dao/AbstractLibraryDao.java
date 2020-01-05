@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -120,14 +121,14 @@ public abstract class AbstractLibraryDao extends AbstractResourceDao<Library, Li
         LibraryDb resourceDb = this.convertResourceToResourceDb(object);
         EdgeUtils.of(LibraryComponentEdge.class).updateReference(resourceDb, "component", libraryComponentEdgeRepository);
         if (object.getVersions() != null) {
-            List versionsItemsToUpdate = object.getVersions().stream().map(i -> new LibraryApiVersionDb(i.getId())).collect(Collectors.toList());
+            List versionsItemsToUpdate = object.getVersions().parallelStream().filter(Objects::nonNull).map(i -> new LibraryApiVersionDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(LibraryApiVersionLibraryEdge.class).updateList(resourceDb, versionsItemsToUpdate, libraryApiVersionLibraryEdgeRepository);
         }
         EdgeUtils.of(LibraryBinaryRepositoryEdge.class).updateReference(resourceDb, "binaryRepository", libraryBinaryRepositoryEdgeRepository);
         EdgeUtils.of(SourceRepositoryLibraryEdge.class).updateReference(resourceDb, "sourceRepository", sourceRepositoryLibraryEdgeRepository);
         EdgeUtils.of(PipelineLibraryEdge.class).updateReference(resourceDb, "pipeline", pipelineLibraryEdgeRepository);
         if (object.getCatalogEntries() != null) {
-            List catalogEntriesItemsToUpdate = object.getCatalogEntries().stream().map(i -> new CatalogEntryDb(i.getId())).collect(Collectors.toList());
+            List catalogEntriesItemsToUpdate = object.getCatalogEntries().parallelStream().filter(Objects::nonNull).map(i -> new CatalogEntryDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(LibraryCatalogEntryEdge.class).updateList(resourceDb, catalogEntriesItemsToUpdate, libraryCatalogEntryEdgeRepository);
         }
 

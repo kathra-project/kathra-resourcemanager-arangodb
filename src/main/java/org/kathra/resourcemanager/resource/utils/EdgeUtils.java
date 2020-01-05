@@ -204,8 +204,11 @@ public class EdgeUtils<X> {
         return resourcesItemsNew.stream()
                     .filter(defined -> !Resource.StatusEnum.DELETED.equals(defined.getStatus()) && existingEdges.stream().noneMatch(existingChild -> {
                         try {
-                            return ((AbstractResourceDb) attributeChild.get(existingChild)).getId().equals(defined.getId());
+                            AbstractResourceDb resource = ((AbstractResourceDb) attributeChild.get(existingChild));
+                            return resource != null && resource.getId() != null && resource.getId().equals(defined.getId());
                         } catch (Exception e) {
+                            if (e instanceof java.util.NoSuchElementException)
+                                return false;
                             logger.error("Unable to get instance from property "+attributeChild.getName()+" into class "+existingChild.getClass().toString(), e);
                             throw new RuntimeException(e);
                         }
@@ -219,8 +222,11 @@ public class EdgeUtils<X> {
                         .filter(existing -> {
                                 return resourcesItemsNew.stream().filter(i -> !Resource.StatusEnum.DELETED.equals(i.getStatus())).noneMatch(defined -> {
                                     try {
-                                        return defined.getId().equals(((AbstractResourceDb) attributeChild.get(existing)).getId());
+                                        AbstractResourceDb resource = ((AbstractResourceDb) attributeChild.get(existing));
+                                        return resource != null && resource.getId() != null && defined.getId().equals(resource.getId());
                                     } catch (Exception e) {
+                                        if (e instanceof java.util.NoSuchElementException)
+                                            return false;
                                         logger.error("Unable to get instance from property "+attributeChild.getName()+" into class "+existing.getClass().toString(), e);
                                         throw new RuntimeException(e);
                                     }

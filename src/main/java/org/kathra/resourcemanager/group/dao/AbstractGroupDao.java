@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.kathra.resourcemanager.resource.utils.EdgeUtils;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import fr.xebia.extras.selma.Selma;
@@ -108,11 +109,11 @@ public abstract class AbstractGroupDao extends AbstractResourceDao<Group, GroupD
         GroupDb resourceDb = this.convertResourceToResourceDb(object);
         EdgeUtils.of(UserGroupEdge.class).updateReference(resourceDb, "technicalUser", userGroupEdgeRepository);
         if (object.getBinaryRepositories() != null) {
-            List binaryRepositoriesItemsToUpdate = object.getBinaryRepositories().stream().map(i -> new BinaryRepositoryDb(i.getId())).collect(Collectors.toList());
+            List binaryRepositoriesItemsToUpdate = object.getBinaryRepositories().parallelStream().filter(Objects::nonNull).map(i -> new BinaryRepositoryDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(GroupBinaryRepositoryEdge.class).updateList(resourceDb, binaryRepositoriesItemsToUpdate, groupBinaryRepositoryEdgeRepository);
         }
         if (object.getMembers() != null) {
-            List membersItemsToUpdate = object.getMembers().stream().map(i -> new AssignationDb(i.getId())).collect(Collectors.toList());
+            List membersItemsToUpdate = object.getMembers().parallelStream().filter(Objects::nonNull).map(i -> new AssignationDb(i.getId())).collect(Collectors.toList());
             EdgeUtils.of(GroupAssignationEdge.class).updateList(resourceDb, membersItemsToUpdate, groupAssignationEdgeRepository);
         }
         EdgeUtils.of(GroupGroupEdge.class).updateReference(resourceDb, "parent", groupGroupEdgeRepository);
