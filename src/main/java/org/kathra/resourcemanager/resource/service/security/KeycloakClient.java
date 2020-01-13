@@ -36,7 +36,7 @@ public class KeycloakClient {
     public void init(){
         try {
             KeycloakUtils.init();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             e.printStackTrace();
             System.exit(-1);
         }
