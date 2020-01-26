@@ -115,10 +115,7 @@ public abstract class AbstractCatalogEntryPackageDao extends AbstractResourceDao
         EdgeUtils.of(CatalogEntryPackageBinaryRepositoryEdge.class).updateReference(resourceDb, "binaryRepository", catalogEntryPackageBinaryRepositoryEdgeRepository);
         EdgeUtils.of(SourceRepositoryCatalogEntryPackageEdge.class).updateReference(resourceDb, "sourceRepository", sourceRepositoryCatalogEntryPackageEdgeRepository);
         EdgeUtils.of(PipelineCatalogEntryPackageEdge.class).updateReference(resourceDb, "pipeline", pipelineCatalogEntryPackageEdgeRepository);
-        if (object.getCatalogEntries() != null) {
-            List catalogEntriesItemsToUpdate = object.getCatalogEntries().parallelStream().filter(Objects::nonNull).map(i -> new CatalogEntryDb(i.getId())).collect(Collectors.toList());
-            EdgeUtils.of(CatalogEntryPackageCatalogEntryEdge.class).updateList(resourceDb, catalogEntriesItemsToUpdate, catalogEntryPackageCatalogEntryEdgeRepository);
-        }
+
 
     }
 
