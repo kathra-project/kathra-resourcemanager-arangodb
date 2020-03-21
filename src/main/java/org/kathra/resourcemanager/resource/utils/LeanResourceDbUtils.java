@@ -136,7 +136,7 @@ public class LeanResourceDbUtils<X extends IResourceDb> {
                 }
             }
         } catch(Exception e) {
-
+            e.printStackTrace();
         }
         return object;
     }

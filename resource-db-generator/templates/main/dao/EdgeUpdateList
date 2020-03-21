@@ -1,4 +1,4 @@
         if (object.{{propertyGetter}}() != null) {
-            List {{property}}ItemsToUpdate = object.{{propertyGetter}}().stream().map(i -> new {{clazzProperty}}(i.getId())).collect(Collectors.toList());
+            List {{property}}ItemsToUpdate = object.{{propertyGetter}}().parallelStream().filter(Objects::nonNull).map(i -> new {{clazzProperty}}(i.getId())).collect(Collectors.toList());
             EdgeUtils.of({{edgeClazz}}.class).updateList(resourceDb, {{property}}ItemsToUpdate, {{edgeRepository}});
         }

@@ -6,4 +6,8 @@
 *.iml
 resource-db-generator/node_modules
 resource-db-generator/package-lock.json
+target*.iml
+.project
+.settings
+.classpath
 target

@@ -27,6 +27,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -69,15 +70,21 @@ public class LeanResourceUtils<X extends Resource> {
                 if (Resource.class.isAssignableFrom(propertyObject.getClass())) {
                     cleanExceptObject((Resource) propertyObject);
                 } else if (Iterable.class.isAssignableFrom(propertyObject.getClass())) {
-                    ((Iterable) propertyObject).forEach(item -> {
-                        if (item instanceof Resource) {
+                    Iterator it = ((Iterable) propertyObject).iterator();
+                    while (it.hasNext()) {
+                        Object item = it.next();
+                        if (item == null) {
+                            it.remove();
+                        } else if (item instanceof Resource) {
                             cleanExceptObject((Resource) item);
                         }
-                    });
+                    }
                 } else if (Map.class.isAssignableFrom(propertyObject.getClass())) {
                     for(Object entry : ((Map) propertyObject).entrySet()){
                         if (entry instanceof Map.Entry){
-                            if(((Map.Entry)entry).getValue() instanceof Resource){
+                            if (((Map.Entry)entry).getValue() == null) {
+                                ((Map) propertyObject).remove(((Map.Entry)entry).getKey());
+                            } else if(((Map.Entry)entry).getValue() instanceof Resource){
                                 cleanExceptObject((Resource) ((Map.Entry)entry).getValue());
                             }
                             if(((Map.Entry)entry).getKey() instanceof Resource){
